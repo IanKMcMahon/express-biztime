@@ -3,7 +3,21 @@ const db = require("../db");
 const ExpressError = require("./expressError")
 const router = new express.Router();
 
-
+router.get('/', async (req, res, next) => {
+    try {
+        const result = await db.query(
+              `SELECT id, comp_Code
+               FROM invoices 
+               ORDER BY id`
+        );
+    
+        return res.json({"invoices": result.rows});
+      }
+    
+      catch (err) {
+        return next(err);
+      }
+    });
 
 
 // ## **Step 3: Add Invoices**
