@@ -2,6 +2,7 @@ const express = require("express");
 const db = require("../db");
 const ExpressError = require("../expressError")
 const router = new express.Router();
+const slugify = require("slugify")
 
 router.get('/', async (req, res, next) => {
     try {
@@ -10,7 +11,6 @@ router.get('/', async (req, res, next) => {
                FROM companies 
                ORDER BY name`
         );
-    
         return res.json({"companies": result.rows});
       }
     
@@ -54,10 +54,11 @@ router.get('/', async (req, res, next) => {
   
 router.post('/', async (req, res, next) => {
     try {
-        let { name, description } = req.body;
+        let { code, name, description } = req.body;
+        const slugCode = slugify(name, { lower: true, remove: /[*+~.()'"!:@]/g });
         const results = await db.query(
-            'INSERT INTO companies (code, name, description) VALUES ($1, $2, $3) RETURNING code, name, description', [code, name, description])
-            return res.status(201).json({company: results.rows[1]});
+            'INSERT INTO companies (code, name, description) VALUES ($1, $2, $3) RETURNING code, name, description', [slugCode, name, description])
+            return res.status(201).json({company: results.rows[0]});
 
 }
     catch (err) {
@@ -68,7 +69,7 @@ router.post('/', async (req, res, next) => {
 
 router.put('/:code', async (req, res, next) => {
     try {
-        const { name, description } = req.body;
+        const { code, name, description } = req.body;
         const result = await db.query(
             `UPDATE companies
              SET name=$1, description=$2

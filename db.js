@@ -2,14 +2,11 @@
 
 const { Client } = require("pg");
 
+const connectionString = 'postgresql://ian_mcmahon:test@localhost:5432/biztime';
+
+// Create a new client instance
 const client = new Client({
-  connectionString: "postgresql:///biztime"
-  // user?: string | undefined;
-  // database?: string | undefined;
-  // port: number;
-  // host: string;
-  // password?: string | undefined;
-  // ssl: boolean;
+    connectionString: connectionString,
 });
 
 client.connect();
